@@ -1,0 +1,24 @@
+{
+  "name": "backend_users",
+  "version": "1.0.0",
+  "description": "this is a backend for web users and mobile",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "redis-monitor": "redis-commander",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "googleapis": "^108.0.0",
+    "ioredis": "^5.2.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.2",
+    "nodemailer": "^6.7.8",
+    "nodemon": "^2.0.19"
+  }
+}
