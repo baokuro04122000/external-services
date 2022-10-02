@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 const redis = require('./v1/databases/init.redis')
 const jwt = require('./v1/services/jwt.service')
-const { sendMail } = require('./v1/services/sendMail')
+const { sendMail, sendOtp } = require('./v1/services/sendMail')
 //init dbs 
 //require('./v1/databases/init.mongodb')
-redis.subscribe("send_mail", (err, count) =>{
+redis.subscribe("send_mail","send_otp_reset_password", (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
       } else {
@@ -21,6 +21,15 @@ redis.on('message',async (channel, user) => {
     try {
       const data = JSON.parse(user)
       sendMail(data.email, data.verifyToken)
+      return 
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  if(channel === "send_otp_reset_password") {
+    try {
+      const data = JSON.parse(user)
+      sendOtp(data.email, data.otp)
       return 
     } catch (error) {
       console.log(error)
