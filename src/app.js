@@ -5,7 +5,7 @@ const jwt = require('./v1/services/jwt.service')
 const { sendMail, sendOtp } = require('./v1/services/sendMail')
 //init dbs 
 //require('./v1/databases/init.mongodb')
-redis.subscribe("send_mail","send_otp_reset_password", (err, count) =>{
+redis.subscribe("send_mail","send_otp_reset_password","send_otp_register_mobile", (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
       } else {
@@ -29,7 +29,16 @@ redis.on('message',async (channel, user) => {
   if(channel === "send_otp_reset_password") {
     try {
       const data = JSON.parse(user)
-      sendOtp(data.email, data.otp)
+      sendOtp(data.email, data.otp, null)
+      return 
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  if(channel === "send_otp_register_mobile") {
+    try {
+      const data = JSON.parse(user)
+      sendOtp(data.email, data.otp, "Please enter the otp code to active your account")
       return 
     } catch (error) {
       console.log(error)
