@@ -1,11 +1,27 @@
 const express = require('express');
-const app = express();
+const cors = require('cors')
+const helmet = require('helmet')
 const redis = require('./v1/databases/init.redis')
-const jwt = require('./v1/services/jwt.service')
+const {
+  sendOTPConfirmEmail,
+  sendOTPResetPassword,
+  sendMailToRegisterSeller
+} = require('./v1/utils/templateEmail')
+const {
+  deleteFiles
+} = require('./v1/services/uploadFile.server')
+const app = express();
+
+
 const { sendMail, sendOtp } = require('./v1/services/sendMail')
 //init dbs 
 //require('./v1/databases/init.mongodb')
-redis.subscribe("send_mail","send_otp_reset_password","send_otp_register_mobile", (err, count) =>{
+redis.subscribe(
+  "send_mail",
+  "send_otp_reset_password",
+  "send_otp_register_mobile",
+  "delete_file_list",
+   (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
       } else {
@@ -15,12 +31,20 @@ redis.subscribe("send_mail","send_otp_reset_password","send_otp_register_mobile"
       }
 })
 
-redis.on('message',async (channel, user) => {
+redis.on('message',async (channel, data) => {
   console.log(`Received data from ${channel}`);
   if(channel === "send_mail") {
     try {
-      const data = JSON.parse(user)
-      sendMail(data.email, data.verifyToken)
+      const payload = JSON.parse(data)
+      if(payload.type === "register_seller"){
+        sendMail(
+          payload.email, 
+          payload.verifyToken, 
+          payload.name, 
+          'Access the link to register seller account',
+          sendMailToRegisterSeller
+          )
+      }
       return 
     } catch (error) {
       console.log(error)
@@ -28,8 +52,8 @@ redis.on('message',async (channel, user) => {
   }
   if(channel === "send_otp_reset_password") {
     try {
-      const data = JSON.parse(user)
-      sendOtp(data.email, data.otp, null)
+      const payload = JSON.parse(data)
+      sendOtp(payload.email,payload.name, payload.otp, "The OTP Code Reset Password", sendOTPResetPassword)
       return 
     } catch (error) {
       console.log(error)
@@ -37,15 +61,24 @@ redis.on('message',async (channel, user) => {
   }
   if(channel === "send_otp_register_mobile") {
     try {
-      const data = JSON.parse(user)
-      sendOtp(data.email, data.otp, "Please enter the otp code to active your account")
+      const payload = JSON.parse(data)
+      sendOtp(payload.email,payload.name ,payload.otp, "The OTP code active your account", sendOTPConfirmEmail)
       return 
     } catch (error) {
       console.log(error)
     }
   }
+  if(channel === "delete_file_list"){
+    const payload = JSON.parse(data)
+    deleteFiles(payload.fileList)
+  }
 })
 
+// parse application/json
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(helmet())
+app.use(cors())
 //router
 app.use(require('./v1/routes/index.router'))
 

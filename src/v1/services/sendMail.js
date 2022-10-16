@@ -10,7 +10,7 @@ const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_U
 oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN})
 
 module.exports = {
-  sendMail : async (sendTo, token, subject) => {
+  sendMail : async (sendTo, token ,name, subject, html) => {
     try {
       const acessToken = await oAuth2Client.getAccessToken()
       const transporter = nodemailer.createTransport({
@@ -26,11 +26,11 @@ module.exports = {
       });
 
       let info = await transporter.sendMail({
-        from: '"Fred Foo 👻"<baotrue123@gmail.com>', // sender address
+        from: '"BTN Ecommerce 👻"<baotrue123@gmail.com>', // sender address
         to: sendTo, // list of receivers
-        subject: "Please active your account", // Subject line
-        text: "Hello I'm BN ecommer", // plain text body
-        html: `<a href='${process.env.LINK_ACTIVE_ACCOUNT}?token=${token}'>Click here to active account</a>`, // html body
+        subject: subject, // Subject line
+        text: "Email to register seller account", // plain text body
+        html: html(token, name)
       });
 
       console.log(info)
@@ -38,7 +38,7 @@ module.exports = {
       console.error(error)
     }
   },
-  sendOtp:async (sendTo, otp, subject) => {
+  sendOtp:async (sendTo,name, otp, subject, html) => {
     try {
       const acessToken = await oAuth2Client.getAccessToken()
       const transporter = nodemailer.createTransport({
@@ -58,7 +58,7 @@ module.exports = {
         to: sendTo, // list of receivers
         subject:!subject ? "Please enter the otp code to reset password" : subject, // Subject line
         text: "Your OTP code", // plain text body
-        html: `<h1>${otp}</h1>`, // html body
+        html: html(otp, name), // html body
       });
 
       console.log(info)
