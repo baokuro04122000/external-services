@@ -102,7 +102,7 @@ var that = module.exports = {
     if(fileList.length === 1){
       try {
         const deleteFile = await drive.files.delete({
-          fileId:id
+          fileId:fileList[0]
         })
         return 
       } catch (error) {
