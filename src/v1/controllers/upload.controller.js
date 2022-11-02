@@ -1,13 +1,19 @@
-const {uploadSingleFile, uploadFileList} = require('../services/uploadFile.server')
+const {setFilePublic, uploadFileList} = require('../services/uploadFile.server')
 
 var that = module.exports = {
   uploadFile:async (req, res) => {
-    console.log("jdhaskd",req.file)
+    const link = `https://drive.google.com/uc?id=${req.file.fileId}`
     try {
-      const image =await uploadSingleFile(req.file)
-      res.json(image)
+      await setFilePublic(req.file.fileId)
+      console.log(link)
+      res.json({
+        fileLink: link,
+        fileId: req.file.fileId,
+        status: "done"
+      })
     } catch (error) {
-      res.status(error.status).json(error)  
+      console.log(error)
+      res.status(400).json(error)  
     }
   },
   uploadProofSeller:async (req, res) => {

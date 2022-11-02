@@ -26,76 +26,15 @@ var that = module.exports = {
           type: 'anyone'
         }
       })
-
-      const getUrl = await drive.files.get({
-        fileId,
-        fields: 'webViewLink, webContentLink'
-      })
-      return getUrl
-
+      return true
     } catch (error) {
-      console.log(error)
-    }
-  },
-  uploadSingleFile: (file) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const fileMetadata = {
-          name: file.originalname+"_"+shortid.generate(),
-          parents: [PARENT_DRIVE], // Change it according to your desired parent folder id
-        };
-  
-        const media = {
-          mimeType: file.minetype,
-          body:fs.createReadStream(file.path)
+      return Promise.reject({
+        status:400,
+        "errors":{
+          message:error
         }
-  
-        const createFile = await drive.files.create({
-          requestBody: fileMetadata,
-          media: media
-        })
-        const fileId = createFile.data.id
-        await that.setFilePublic(fileId)
-        const link = `https://drive.google.com/uc?id=${fileId}`
-        fs.unlink(file.path, function (err) {
-          if (err) throw err;
-          return resolve({
-            fileLink:link,
-            fileId,
-            status:"done"
-          })
-        });
-      } catch (error) {
-        console.log(error)
-        reject({
-          status: 400,
-          "errors":{
-            message: error
-          }
-        })
-      }
-    })    
-  },
-  uploadFileList: (fileList) => {
-    return new Promise(async (resolve, reject) => {
-      const list =  fileList.map(async (file) => {
-          try {
-            const link = await that.uploadSingleFile(file)
-            return link
-          } catch (error) {
-            console.log(error)
-            return reject({
-              status:500,
-              "errors":{
-                message:"Internal Server Error"
-              }
-            })
-          }
-        })
-        Promise.all(list).then((listLink)=>{
-          return resolve(listLink)
-        })
-      })      
+      })
+    }
   },
   deleteFiles:async (fileList) => {
     if(fileList.length === 1){
