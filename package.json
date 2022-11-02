@@ -4,7 +4,7 @@
   "description": "this is a backend for web users and mobile",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "redis-monitor": "redis-commander",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

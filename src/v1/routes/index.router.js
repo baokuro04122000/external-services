@@ -5,21 +5,6 @@ const {uploadSingle, uploadMultiple} = require('../middlewares/multer.middleware
 
 
 router.get('/checkstatus',async (req, res) => {
-    // try {
-    //     //const token = await jwt.signRefreshToken("dinhbao")
-    //     //console.log("token:::",token) 
-
-    //     //await jwt.verifyRefreshToken('dinhbao', token)
-    // } catch (error) {
-    //     console.log(error)
-    //     res.status(400).json({
-    //         status:400,
-    //         "errors":{
-    //             message:"error=-="
-    //         }
-    //     })
-    // }
-
     res.status(200).json({
         status: 'success',
         message: 'api ok'

@@ -70,6 +70,7 @@ redis.on('message',async (channel, data) => {
   }
   if(channel === "delete_file_list"){
     const payload = JSON.parse(data)
+    console.log(payload)
     deleteFiles(payload.fileList)
   }
 })

@@ -31,7 +31,6 @@ var that = module.exports = {
         fileId,
         fields: 'webViewLink, webContentLink'
       })
-
       return getUrl
 
     } catch (error) {
@@ -104,6 +103,7 @@ var that = module.exports = {
         const deleteFile = await drive.files.delete({
           fileId:fileList[0]
         })
+        console.log('deleting success')
         return 
       } catch (error) {
         console.log(error)
