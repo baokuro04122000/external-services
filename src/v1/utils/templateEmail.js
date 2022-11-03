@@ -171,7 +171,7 @@ var that = module.exports = {
                                                               Enter the OTP code below to reset password.
                                                               <br/>
                                                               <br/>
-                                                              This OTP code will expire in 60 minutes and can only be used once.
+                                                              This OTP code will expire in 5 minutes and can only be used once.
                                                               <br/>
                                                               <span target="_blank" style="color:#ffffff; background: #0010F7; border: 1px solid #0010F7; border-radius:8px; display: inline-block; margin-top: 8px; padding: 12px 22px; text-decoration:none;">
                                                                   ${otp}
@@ -276,7 +276,7 @@ var that = module.exports = {
                                                               Click the link below to sign up your seller account.
                                                               <br/>
                                                               <br/>
-                                                              This link will expire in 60 minutes and can only be used once.
+                                                              This link will expire in 24h and can only be used once.
                                                               <br/>
                                                               <a href="${process.env.LINK_REGISTER_SELLER+token}" target="_blank" style="color:#ffffff; background: #0010F7; border: 1px solid #0010F7; border-radius:8px; display: inline-block; margin-top: 8px; padding: 12px 22px; text-decoration:none;">
                                                                   Register Seller
