@@ -1,9 +1,9 @@
 module.exports = {
     apps: [{
-        name: "ecommerce",
+        name: "external",
         script: "./server.js",
         exec_mode: 'cluster',
-        instances: 4,
+        instances: 2,
         watch: true,
         ignore_watch: ["node_modules"],
         env_production: {
