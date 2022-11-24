@@ -10,7 +10,7 @@ const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_U
 oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN})
 
 module.exports = {
-  sendMail : async (sendTo, token ,name, subject, html) => {
+  sendMail : async ({sendTo,text, subject, html}) => {
     try {
       const acessToken = await oAuth2Client.getAccessToken()
       const transporter = nodemailer.createTransport({
@@ -29,8 +29,8 @@ module.exports = {
         from: '"BTN Ecommerce 👻"<baotrue123@gmail.com>', // sender address
         to: sendTo, // list of receivers
         subject: subject, // Subject line
-        text: "Email to register seller account", // plain text body
-        html: html(token, name)
+        text: text, // plain text body
+        html: html
       });
 
       console.log(info)

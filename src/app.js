@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require('cors')
-const helmet = require('helmet')
 const redis = require('./v1/databases/init.redis')
 const {
   sendOTPConfirmEmail,
   sendOTPResetPassword,
-  sendMailToRegisterSeller
+  sendMailToRegisterSeller,
+  sendMailOrderSuccess
 } = require('./v1/utils/templateEmail')
 const {
   deleteFiles
@@ -21,6 +21,7 @@ redis.subscribe(
   "send_otp_reset_password",
   "send_otp_register_mobile",
   "delete_file_list",
+  "order_success",
    (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
@@ -34,51 +35,53 @@ redis.subscribe(
 redis.on('message',async (channel, data) => {
   console.log(`Received data from ${channel}`);
   if(channel === "send_mail") {
-    try {
-      const payload = JSON.parse(data)
       if(payload.type === "register_seller"){
-        sendMail(
-          payload.email, 
-          payload.verifyToken, 
-          payload.name, 
-          'Access the link to register seller account',
-          sendMailToRegisterSeller
-          )
+        sendMail({
+          sendTo: payload.email,
+          text:"Email to register seller account",
+          subject:'Access the link to register seller account',
+          html: sendMailToRegisterSeller(payload.verifyToken, payload.name)   
+        })
+        return
       }
-      return 
-    } catch (error) {
-      console.log(error)
-    }
+    return
   }
   if(channel === "send_otp_reset_password") {
-    try {
       const payload = JSON.parse(data)
       sendOtp(payload.email,payload.name, payload.otp, "The OTP Code Reset Password", sendOTPResetPassword)
-      return 
-    } catch (error) {
-      console.log(error)
-    }
+      return
   }
   if(channel === "send_otp_register_mobile") {
-    try {
-      const payload = JSON.parse(data)
-      sendOtp(payload.email,payload.name ,payload.otp, "The OTP code active your account", sendOTPConfirmEmail)
-      return 
-    } catch (error) {
-      console.log(error)
-    }
+    const payload = JSON.parse(data)
+    sendOtp(payload.email,payload.name ,payload.otp, "The OTP code active your account", sendOTPConfirmEmail)
+    return
   }
   if(channel === "delete_file_list"){
     const payload = JSON.parse(data)
     console.log(payload)
     deleteFiles(payload.fileList)
+    return
+  }
+  if(channel === "order_success"){
+    const payload = JSON.parse(data)
+    sendMail({
+      sendTo: payload.email,
+      text:"Email to announce you order",
+      subject:'Please check your order',
+      html: sendMailOrderSuccess({
+        name: payload.name,
+        orderId: payload.orderId,
+        totalPaid: payload.totalPaid,
+        totalShippingCost: payload.totalShippingCost
+      })   
+    })
+    console.log(payload)
   }
 })
 
 // parse application/json
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet())
 app.use(cors())
 //router
 app.use(require('./v1/routes/index.router'))

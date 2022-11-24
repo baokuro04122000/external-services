@@ -2,6 +2,7 @@ const {setFilePublic, uploadFileList} = require('../services/uploadFile.server')
 
 var that = module.exports = {
   uploadFile:async (req, res) => {
+    console.log(req.file)
     const link = `https://drive.google.com/uc?id=${req.file.fileId}`
     try {
       await setFilePublic(req.file.fileId)
