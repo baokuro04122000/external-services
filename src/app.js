@@ -35,6 +35,7 @@ redis.subscribe(
 redis.on('message',async (channel, data) => {
   console.log(`Received data from ${channel}`);
   if(channel === "send_mail") {
+      const payload = JSON.parse(data)
       if(payload.type === "register_seller"){
         sendMail({
           sendTo: payload.email,
