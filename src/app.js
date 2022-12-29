@@ -10,6 +10,7 @@ const {
 const {
   deleteFiles
 } = require('./v1/services/uploadFile.server')
+const KEY = require('./v1/lang/key.socket')
 const app = express();
 
 
@@ -22,6 +23,8 @@ redis.subscribe(
   "send_otp_register_mobile",
   "delete_file_list",
   "order_success",
+  "send_noti_order",
+  "send_noti_delivery",
    (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
@@ -77,6 +80,28 @@ redis.on('message',async (channel, data) => {
       })   
     })
     console.log(payload)
+  }
+  if(channel === "send_noti_order"){
+    const payload = JSON.parse(data)
+    console.log(payload)
+    global.users[payload.user]?.forEach((socketId) => {
+      global._io.sockets.to(socketId).emit(KEY.send_noti_confirm_order, {
+        title: payload.title,
+        content: payload.content,
+        type: payload.type
+      })
+    })
+  }
+  if(channel === "send_noti_delivery"){
+    const payload = JSON.parse(data)
+    console.log(payload)
+    global.users[payload.user]?.forEach((socketId) => {
+      global._io.sockets.to(socketId).emit(KEY.send_noti_confirm_shipping, {
+        title: payload.title,
+        content: payload.content,
+        type: payload.type
+      })
+    })
   }
 })
 
