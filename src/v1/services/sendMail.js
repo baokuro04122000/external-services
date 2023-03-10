@@ -1,10 +1,10 @@
 const { google } = require('googleapis')
 const nodemailer = require('nodemailer')
 require('dotenv').config()
-const CLIENT_ID = process.env.CLIENT_ID
-const CLIENT_SECRET = process.env.CLIENT_SECRET
-const REDIRECT_URI = process.env.REDIRECT_URI
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN
+const CLIENT_ID = process.env.CLIENT_ID_EMAIL
+const CLIENT_SECRET = process.env.CLIENT_SECRET_EMAIL
+const REDIRECT_URI = process.env.REDIRECT_URI_EMAIL
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN_EMAIL
 
 const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI)
 oAuth2Client.setCredentials({refresh_token: REFRESH_TOKEN})
@@ -17,7 +17,7 @@ module.exports = {
         service:'gmail',
         auth:{
           type: 'OAUTH2',
-          user:'baotrue123@gmail.com',
+          user: process.env.USERNAME_EMAIL || 'baotrue123@gmail.com',
           clientId:CLIENT_ID,
           clientSecret:CLIENT_SECRET,
           refreshToken:REFRESH_TOKEN,
@@ -26,7 +26,7 @@ module.exports = {
       });
 
       let info = await transporter.sendMail({
-        from: '"BTN Ecommerce 👻"<baotrue123@gmail.com>', // sender address
+        from: `Book Ecommerce 👻<${process.env.USERNAME_EMAIL || "baotrue123@gmail.com"}>`, // sender address
         to: sendTo, // list of receivers
         subject: subject, // Subject line
         text: text, // plain text body
@@ -45,7 +45,7 @@ module.exports = {
         service:'gmail',
         auth:{
           type: 'OAUTH2',
-          user:'baotrue123@gmail.com',
+          user:process.env.USERNAME_EMAIL || 'baotrue123@gmail.com',
           clientId:CLIENT_ID,
           clientSecret:CLIENT_SECRET,
           refreshToken:REFRESH_TOKEN,
@@ -54,7 +54,7 @@ module.exports = {
       });
 
       let info = await transporter.sendMail({
-        from: '"BTN Ecommerce 👻"<baotrue123@gmail.com>', // sender address
+        from: `Book Ecommerce 👻<${process.env.USERNAME_EMAIL || "baotrue123@gmail.com"}>`, // sender address
         to: sendTo, // list of receivers
         subject:!subject ? "Please enter the otp code to reset password" : subject, // Subject line
         text: "Your OTP code", // plain text body

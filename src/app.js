@@ -3,9 +3,10 @@ const cors = require('cors')
 const redis = require('./v1/databases/init.redis')
 const {
   sendOTPConfirmEmail,
-  sendOTPResetPassword,
+  sendTokenResetPassword,
   sendMailToRegisterSeller,
-  sendMailOrderSuccess
+  sendMailOrderSuccess,
+  sendMailActiveAccount
 } = require('./v1/utils/templateEmail')
 const {
   deleteFiles
@@ -19,7 +20,8 @@ const { sendMail, sendOtp } = require('./v1/services/sendMail')
 //require('./v1/databases/init.mongodb')
 redis.subscribe(
   "send_mail",
-  "send_otp_reset_password",
+  "send_token",
+  "send_email_reset_password",
   "send_otp_register_mobile",
   "delete_file_list",
   "order_success",
@@ -39,6 +41,7 @@ redis.on('message',async (channel, data) => {
   console.log(`Received data from ${channel}`);
   if(channel === "send_mail") {
       const payload = JSON.parse(data)
+      console.log(payload)
       if(payload.type === "register_seller"){
         sendMail({
           sendTo: payload.email,
@@ -48,11 +51,19 @@ redis.on('message',async (channel, data) => {
         })
         return
       }
+      if(payload.type === 'register_user'){
+        sendMail({
+          sendTo: payload.email,
+          text:"Email to active your account",
+          subject:'Access the link to active your account',
+          html: sendMailActiveAccount({token: payload.verifyToken, name: payload.name})   
+        })
+      }
     return
   }
-  if(channel === "send_otp_reset_password") {
+  if(channel === "send_email_reset_password") {
       const payload = JSON.parse(data)
-      sendOtp(payload.email,payload.name, payload.otp, "The OTP Code Reset Password", sendOTPResetPassword)
+      sendOtp(payload.email,payload.name, payload.token, "The Link Reset Password", sendTokenResetPassword)
       return
   }
   if(channel === "send_otp_register_mobile") {
@@ -108,6 +119,8 @@ redis.on('message',async (channel, data) => {
 // parse application/json
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/images", express.static('src/public/images'))
+app.use("/proof", express.static('src/public/proof'))
 app.use(cors())
 //router
 app.use(require('./v1/routes/index.router'))

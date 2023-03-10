@@ -1,0 +1,9 @@
+@HOST = http://localhost:9000/api
+
+POST {{HOST}}/delete/image
+Content-Type: application/json
+
+{
+  "type":"images",
+  "image":"http://localhost:9000/proof/1678257746825-fH-1sc7Bi.jpg"
+}

@@ -1,29 +1,36 @@
-const {setFilePublic, uploadFileList} = require('../services/uploadFile.server')
+const {
+  deleteFile,
+  deleteFileListImage,
+  deleteFileListProof
+} = require('../services/uploadFile.server')
 
 var that = module.exports = {
   uploadFile:async (req, res) => {
-    console.log(req.file)
-    const link = `https://drive.google.com/uc?id=${req.file.fileId}`
-    try {
-      await setFilePublic(req.file.fileId)
-      console.log(link)
-      res.json({
-        fileLink: link,
-        fileId: req.file.fileId,
-        status: "done"
-      })
-    } catch (error) {
-      console.log(error)
-      res.status(400).json(error)  
-    }
+    return res.status(201).json({image: process.env.SERVER_HOST_IMAGE + req.file.filename})
   },
   uploadProofSeller:async (req, res) => {
-    console.log("multiple",req.files)
+    return 'hello world'
+  },
+  delete: (req, res) => {
+    const {image, type} = req.body
+    return res.status(200).json(deleteFile({file: image.split('/').at(-1), typeFolder: type}))
+  },
+  deleteListImage:async (req, res) => {
+    const {files} = req.body
     try {
-      const fileList = await uploadFileList(req.files)
-      res.json(fileList)
+      const payload = await deleteFileListImage(files)
+      return res.status(payload.status).json(payload)
     } catch (error) {
-      res.status(error).json(error)
+      return res.status(error.payload).json(error)
+    }
+  },
+  deleteFileListProof: async (req, res) => {
+    const {files} = req.body
+    try {
+      const payload = await deleteFileListProof(files);
+      return res.status(payload.status).json(payload)
+    } catch (error) {
+      return res.status(error.payload).json(error)
     }
   }
 }

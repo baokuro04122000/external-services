@@ -10,8 +10,12 @@ router.get('/checkstatus',async (req, res) => {
     })
 })
 
-router.post('/api/upload-image',uploadSingle,
- uploadController.uploadFile)
+router.post('/api/upload/image',uploadSingle,
+    uploadController.uploadFile)
 
-router.post('/api/upload-proof-seller', uploadMultiple, uploadController.uploadProofSeller)
+router.post('/api/upload/proof', uploadMultiple, uploadController.uploadProofSeller)
+router.post('/api/delete/image', uploadController.delete)
+router.post('/api/delete/image/list', uploadController.deleteListImage)
+router.post('/api/delete/proof/list', uploadController.deleteFileListProof)
+
 module.exports = router;
