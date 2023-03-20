@@ -1,13 +1,13 @@
 const JWT = require('jsonwebtoken')
 const createError = require('http-errors')
 const redis = require('../databases/init.redis')
+require('dotenv').config()
 
-const signAccessToken = async (user) => {
+const signAccessToken = async (user, secret, ex) => {
   return new Promise( (resolve, reject) => {
     const payload = user
-    const secret = process.env.ACCESS_TOKEN_SECRET
     const options = {
-      expiresIn: '1d'
+      expiresIn: ex || '1d'
     }
     JWT.sign(payload, secret, options, (err, token) => {
       if(err) return reject(err)
@@ -18,9 +18,11 @@ const signAccessToken = async (user) => {
 
 const verifyAccessToken = (req, res, next) => {
   
-  const token = "token"
+  const token = req.headers['authorization'];
+  const { login } = req.query
+  const secret = login ? process.env.ACCESS_TOKEN_SECRET : process.env.ACCESS_TOKEN_SECRET;
   //start verify token
-  JWT.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
+  JWT.verify(token, secret, (err, payload) => {
     if(err){
       if(err.name === "JsonWebTokenError"){
         return next(createError.Unauthorized())
@@ -31,6 +33,7 @@ const verifyAccessToken = (req, res, next) => {
     next()
   })
 }
+
 
 const signRefreshToken = async (userId) => {
   return new Promise( (resolve, reject) => {
@@ -69,5 +72,5 @@ module.exports = {
   signAccessToken,
   verifyAccessToken,
   signRefreshToken,
-  verifyRefreshToken
+  verifyRefreshToken,
 }

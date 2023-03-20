@@ -1,12 +1,17 @@
 const {
   deleteFile,
   deleteFileListImage,
-  deleteFileListProof
+  deleteFileListProof,
+  moveDelete
 } = require('../services/uploadFile.server')
 
 var that = module.exports = {
   uploadFile:async (req, res) => {
-    return res.status(201).json({image: process.env.SERVER_HOST_IMAGE + req.file.filename})
+    return res.status(201).json({
+      status: 'done',
+      uid: req.file.filename,
+      url: process.env.SERVER_HOST_TEMP +req.payload.userId+'/'+ req.file.filename
+    })
   },
   uploadProofSeller:async (req, res) => {
     return 'hello world'
@@ -32,5 +37,10 @@ var that = module.exports = {
     } catch (error) {
       return res.status(error.payload).json(error)
     }
+  },
+  moveFile: async (req, res) => {
+    const {to, tmp, userId} = req.body
+    moveDelete({to:'src/public/images'+to, temp: './src/public/temp'+tmp, userId: userId})
+    return res.json('hello world')
   }
 }
