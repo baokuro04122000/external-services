@@ -20,10 +20,11 @@ const verifyAccessToken = (req, res, next) => {
   
   const token = req.headers['authorization'];
   const { login } = req.query
-  const secret = login ? process.env.ACCESS_TOKEN_SECRET : process.env.ACCESS_TOKEN_SECRET;
+  const secret = login==='true' ? process.env.ACCESS_TOKEN_SECRET : process.env.IMAGE_TOKEN_SECRET;
   //start verify token
-  JWT.verify(token, secret, (err, payload) => {
+  JWT.verify(token.trim(), secret, (err, payload) => {
     if(err){
+      console.log(err)
       if(err.name === "JsonWebTokenError"){
         return next(createError.Unauthorized())
       }

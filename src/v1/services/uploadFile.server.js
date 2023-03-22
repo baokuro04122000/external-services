@@ -79,19 +79,20 @@ var that = module.exports = {
       }
     })
   },
-  moveDelete:async ({filePath, userId}) => {
-    const src = process.env.DIRECTORY_TEMP+filePath
-    const dest = process.env.DIRECTORY_IMAGE+filePath
-    
-    fs_extra.move(src, dest)
-    .then(() => {
-      const removeTemp = process.env.DIRECTORY_TEMP+userId
-      rimraf(removeTemp)
-      .then(x => console.log(x))
-      .catch(err => console.log(err))
-    })
-    .catch(err => {
-      console.log("err:::",err)
+  moveDelete:async ({filePath, userId, type='images'}) => {
+    return new Promise((resolve, reject) => {
+      const src = process.env.DIRECTORY_TEMP+filePath
+      const dest = type === 'images' ? process.env.DIRECTORY_IMAGE+filePath : process.env.DIRECTORY_PROOF+filePath
+      
+      fs_extra.move(src, dest)
+      .then(() => {
+        // const removeTemp = process.env.DIRECTORY_TEMP+userId
+        // rimraf(removeTemp)
+        // .then(x => resolve(x))
+        // .catch(err => reject(err))
+        return resolve(true)
+      })
+      .catch(err => reject(err))
     })
   }
 }

@@ -46,7 +46,7 @@ var that = module.exports = {
     },
     fileFilter:(req, file, callback) => {
       let ext = path.extname(file.originalname)
-      let math = ['.png', '.jpg', '.gif', '.jpeg', '.dox','.pdf'] 
+      let math = ['.png', '.jpg', '.jpeg', '.dox','.pdf'] 
       if(math.indexOf(ext) === -1) {
         return callback(new Error(Message.format_file_and_image_invalid))
       }
