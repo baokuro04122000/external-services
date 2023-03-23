@@ -1,5 +1,6 @@
 const { rimraf } = require('rimraf');
 const fs = require('fs')
+const fs_extra = require('fs-extra')
 
 var that = module.exports = {
   deleteFile:async ({file, typeFolder}) => {
@@ -76,6 +77,22 @@ var that = module.exports = {
           message: "INTERNAL SERVER ERROR"
         })
       }
+    })
+  },
+  moveDelete:async ({filePath, userId, type='images'}) => {
+    return new Promise((resolve, reject) => {
+      const src = process.env.DIRECTORY_TEMP+filePath
+      const dest = type === 'images' ? process.env.DIRECTORY_IMAGE+filePath : process.env.DIRECTORY_PROOF+filePath
+      
+      fs_extra.move(src, dest)
+      .then(() => {
+        // const removeTemp = process.env.DIRECTORY_TEMP+userId
+        // rimraf(removeTemp)
+        // .then(x => resolve(x))
+        // .catch(err => reject(err))
+        return resolve(true)
+      })
+      .catch(err => reject(err))
     })
   }
 }

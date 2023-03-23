@@ -8,14 +8,14 @@ var that = module.exports = {
   uploadSingle: multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
-        const path = `src/public/images/`;
+        console.log(req.payload)
+        const path = `src/public/temp/${req.payload.userId}`;
         fs.mkdirSync(path, { recursive: true })
         cb(null, path)
       },
       filename: (req, file, cb) => {
         cb(null,Date.now()+"-"+ shortid()+ path.extname(file.originalname))
       },
-      
     }),
     limits: {
       fileSize: Number(process.env.IMAGE_MAX_SIZE || 524288), // default 5Mb
@@ -33,7 +33,7 @@ var that = module.exports = {
   ,uploadMultiple: multer({
     storage: multer.diskStorage({
       destination: function (req, file, callback) {
-        const path = `src/public/proof/`;
+        const path = `src/public/temp/${req.payload.userId}`;
         fs.mkdirSync(path, { recursive: true })
         callback(null, path);
       },
@@ -46,7 +46,7 @@ var that = module.exports = {
     },
     fileFilter:(req, file, callback) => {
       let ext = path.extname(file.originalname)
-      let math = ['.png', '.jpg', '.gif', '.jpeg', '.dox','.pdf'] 
+      let math = ['.png', '.jpg', '.jpeg', '.dox','.pdf'] 
       if(math.indexOf(ext) === -1) {
         return callback(new Error(Message.format_file_and_image_invalid))
       }

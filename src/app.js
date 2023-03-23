@@ -9,13 +9,16 @@ const {
   sendMailActiveAccount
 } = require('./v1/utils/templateEmail')
 const {
-  deleteFiles
+  deleteFiles,
+  moveDelete
 } = require('./v1/services/uploadFile.server')
+const rimraf = require('rimraf')
 const KEY = require('./v1/lang/key.socket')
 const app = express();
 
 
-const { sendMail, sendOtp } = require('./v1/services/sendMail')
+const { sendMail, sendOtp } = require('./v1/services/sendMail');
+
 //init dbs 
 //require('./v1/databases/init.mongodb')
 redis.subscribe(
@@ -27,6 +30,7 @@ redis.subscribe(
   "order_success",
   "send_noti_order",
   "send_noti_delivery",
+  "move_image",
    (err, count) =>{
     if (err) {
         console.error("Failed to subscribe: %s", err.message);
@@ -39,6 +43,12 @@ redis.subscribe(
 
 redis.on('message',async (channel, data) => {
   console.log(`Received data from ${channel}`);
+  if(channel === "move_image"){
+    const payload = JSON.parse(data);
+    const {filePath, userId} = payload
+    moveDelete({filePath, userId})
+    return
+  }
   if(channel === "send_mail") {
       const payload = JSON.parse(data)
       console.log(payload)
@@ -121,6 +131,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/images", express.static('src/public/images'))
 app.use("/proof", express.static('src/public/proof'))
+app.use('/temp', express.static('src/public/temp'))
 app.use(cors())
 //router
 app.use(require('./v1/routes/index.router'))
