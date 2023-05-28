@@ -19,15 +19,16 @@ var that = module.exports = {
     }),
     limits: {
       fileSize: Number(process.env.IMAGE_MAX_SIZE || 524288), // default 5Mb
-    },
-    fileFilter: (req, file, cb) => {
-      let ext = path.extname(file.originalname)
-      let math = ['.png', '.jpg','.gif','.jpeg']
-      if(math.indexOf(ext) === -1) {
-        return cb(new Error(Message.format_file_invalid))
-      }
-      cb(null, true)
-    },
+    }
+    // ,
+    // fileFilter: (req, file, cb) => {
+    //   let ext = path.extname(file.originalname)
+    //   let math = ['.png', '.jpg','.gif','.jpeg']
+    //   if(math.indexOf(ext) === -1) {
+    //     return cb(new Error(Message.format_file_invalid))
+    //   }
+    //   cb(null, true)
+    // },
   }).single("file")
 
   ,uploadMultiple: multer({
@@ -43,14 +44,15 @@ var that = module.exports = {
     }),
     limits: {
       fileSize: 5 * 1024 * 1024,
-    },
-    fileFilter:(req, file, callback) => {
-      let ext = path.extname(file.originalname)
-      let math = ['.png', '.jpg', '.jpeg', '.dox','.pdf'] 
-      if(math.indexOf(ext) === -1) {
-        return callback(new Error(Message.format_file_and_image_invalid))
-      }
-      callback(null, true)
     }
-  }).array("proof",3)
+    // ,
+    // fileFilter:(req, file, callback) => {
+    //   let ext = path.extname(file.originalname)
+    //   let math = ['.png', '.jpg', '.jpeg', '.dox','.pdf'] 
+    //   if(math.indexOf(ext) === -1) {
+    //     return callback(new Error(Message.format_file_and_image_invalid))
+    //   }
+    //   callback(null, true)
+    // }
+  }).array("proof",5)
 }

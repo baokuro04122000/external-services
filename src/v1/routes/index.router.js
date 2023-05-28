@@ -14,6 +14,9 @@ router.get('/checkstatus',async (req, res) => {
 router.post('/api/upload/image',verifyAccessToken, uploadSingle,
     uploadController.uploadFile)
 
+router.post('/api/upload/image-user', uploadSingle,
+uploadController.uploadFile)
+
 router.post('/api/upload/proof',verifyAccessToken, uploadMultiple, uploadController.uploadProofSeller)
 router.post('/api/delete/image', uploadController.delete)
 router.post('/api/delete/image/list', uploadController.deleteListImage)

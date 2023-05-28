@@ -31,6 +31,7 @@ const verifyAccessToken = (req, res, next) => {
       return next(createError.Unauthorized(err.message))
     }
     req.payload = payload
+    console.log('check:::')
     next()
   })
 }

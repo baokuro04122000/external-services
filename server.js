@@ -1,6 +1,7 @@
 require('dotenv').config();
 const app = require('./src/app')
 const http = require('http').Server(app)
+const cors = require('cors');
 const io = require('socket.io')(http, {
     cors:{
         origin: '*'
@@ -9,7 +10,10 @@ const io = require('socket.io')(http, {
 const initAllSocket = require('./src/v1/sockets')
 const JWT = require('jsonwebtoken')
 
-
+app.use(cors({
+    origin:["http://localhost:3000", "http://localhost:3001"],
+    credentials: true
+}));
 const {PORT} = process.env;
 const createError = require('http-errors')
 
